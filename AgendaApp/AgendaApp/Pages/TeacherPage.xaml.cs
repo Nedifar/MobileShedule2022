@@ -185,7 +185,7 @@ namespace AgendaApp.Pages
             var result = await DisplayPromptAsync("Поиск пустого кабинета", "Введите номер пары.", maxLength:1, keyboard:Keyboard.Numeric);
             if (int.TryParse(result, out int numericResult))
             {
-                if (numericResult >= 1 || numericResult <= 6)
+                if (numericResult >= 1 && numericResult <= 6)
                 {
                     var reqesut = await http.GetAsync($"https://bsite.net/Abobus/api/lastdance/searchemptycabinet/{numericResult}");
                     reqesut.EnsureSuccessStatusCode();
@@ -196,6 +196,10 @@ namespace AgendaApp.Pages
                         resultList += item + "\n";
                     }
                     await DisplayAlert($"Список пустых кабинетов на {numericResult} паре.", resultList, "Ok");
+                }
+                else
+                {
+                    await DisplayAlert("Ошибка", "Некорректно введенные данные.", "Ok");
                 }
             }
             else

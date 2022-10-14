@@ -179,5 +179,33 @@ namespace AgendaApp.Pages
                     lbFirstMonth.Text = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateSchedule.DdownDay.Month);
                 });
         }
+
+        private async void SearchCabinet_Clicked(object sender, EventArgs e)
+        {
+            var result = await DisplayPromptAsync("Поиск пустого кабинета", "Введите номер пары.", maxLength: 1, keyboard: Keyboard.Numeric);
+            if (int.TryParse(result, out int numericResult))
+            {
+                if (numericResult >= 1 && numericResult <= 6)
+                {
+                    var reqesut = await http.GetAsync($"https://bsite.net/Abobus/api/lastdance/searchemptycabinet/{numericResult}");
+                    reqesut.EnsureSuccessStatusCode();
+                    var response = reqesut.Content.ReadAsAsync<List<string>>().Result;
+                    string resultList = String.Empty;
+                    foreach (var item in response)
+                    {
+                        resultList += item + "\n";
+                    }
+                    await DisplayAlert($"Список пустых кабинетов на {numericResult} паре.", resultList, "Ok");
+                }
+                else
+                {
+                    await DisplayAlert("Ошибка", "Некорректно введенные данные.", "Ok");
+                }
+            }
+            else
+            {
+                await DisplayAlert("Ошибка", "Некорректно введенные данные.", "Ok");
+            }
+        }
     }
 }
